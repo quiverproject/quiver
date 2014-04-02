@@ -5,7 +5,7 @@
 
 ### Why
 
-Qt Creator is fine, but compiling an app just to design with QML is a drag.
+Qt Creator is great, but compiling an app just to design with QML is a drag.
 
 ### What
 
