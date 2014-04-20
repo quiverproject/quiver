@@ -1,8 +1,8 @@
-#ifndef REFRESH_H
-#define REFRESH_H
+#ifndef QKREFRESHER_H
+#define QKREFRESHER_H
 
 #include <QObject>
-#include <QString
+#include <QString>
 #include <QQmlApplicationEngine>
 #include <QQmlEngine>
 #include <QQuickView>
@@ -11,7 +11,7 @@
 
 #include <QFileSystemWatcher>
 
-class Refresher : public QObject
+class QkRefresher : public QObject
 {
     Q_OBJECT
 
@@ -21,11 +21,11 @@ class Refresher : public QObject
     QFileSystemWatcher  *_watcher;
     QObject             *_object;
     QQmlContext         *_context;
-    QString             *_source;
+    QString             _source;
 
 public:
-    explicit Refresher(QObject *parent = 0);
-    explicit Refresher(const QString& source, QObject *parent = 0);
+    explicit QkRefresher(QObject *parent = 0);
+    explicit QkRefresher(const QString& source, QObject *parent = 0);
 
     void    setView(QQuickView * view);
     void  setSource(const QString& source);
@@ -41,4 +41,4 @@ signals:
     void update();
 };
 
-#endif // REFRESH_H
+#endif // QKREFRESHER_H
