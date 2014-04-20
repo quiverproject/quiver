@@ -2,31 +2,29 @@
 #include <QQmlEngine>
 #include <QQuickView>
 #include <QFileSystemWatcher>
+#include <QDir>
 
-#include "refresh.h"
-#include "c4_window.h"
-#include "c4_qml_updater.h"
-#include "system_globals.h"
-#include "image_ingest_processor.h"
-
-#include <QDebug>
+#include <Qkit.h>
+#include <QkRefresher.h>
+#include <QkWindow.h>
 
 int main(int argc, char *argv[])
 {
     QGuiApplication app(argc, argv);
-
-    C4Window desktop, iPhone, iMini, iPad;
-    C4QmlUpdater updater;
-    SystemGlobals systemGlobals;
-    ImageIngestProcessor imageIngestProcessor;
-    imageIngestProcessor.setProxyPath(systemGlobals.dataPath()+"/proxies");
-
-    desktop.addProperty("updater", &updater);
-    desktop.addProperty("systemGlobals", &systemGlobals);
-    desktop.addProperty("imageIngestProcessor", &imageIngestProcessor);
-    desktop.setSource("/x/d/c4/clientC4/src/qml/desktopDesigner.qml");
-    desktop.addWatchPath("/x/d/c4/clientC4/src/qml/ViewDesigner.qml");
+    QkWindow desktop;
+    // running from: .build/designer/Qkit.app/Contents/MacOS/Qkit
+    desktop.setSource(QDir::currentPath() + "/src/qml/desktopPlatform.qml");
+    desktop.addWatchPath(QDir::currentPath() + "/src/qml/Main.qml");
     desktop.show();
+    return app.exec();
+}
+
+/*
+    // We'll come back to this:
+
+    // This should probably be automatically handled by configuration
+    // And maybe a QkPlatform class that reads the config and builds
+    // the interfaces / deployments automatically.
 
     iPad.addProperty("updater", &updater);
     iPad.addProperty("systemGlobals", &systemGlobals);
@@ -43,6 +41,6 @@ int main(int argc, char *argv[])
 
     iPhone.show();
     iMini .show();
+*/
 
-    return app.exec();
-}
+
