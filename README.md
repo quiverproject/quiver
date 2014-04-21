@@ -1,35 +1,49 @@
-# QMLKit - The fastest way to design Qt apps with QML
+# [QMLKit](https://github.com/ggamel/QMLKit)
 
-## Live reload QML & design for multiple platforms simultaneously
+QMLKit is the fastest way to design Qt apps in real-time with QML, JavaScript, and CoffeeScript.
 
-The Qt Creator design environment is very limited, and separates interface
+The Qt Creator design environment is very limited, separating interface
 design implementation from integration.  QMLKit allows you to interactively
 design QML GUI applications live in the running application.  This makes design
 implementation and integration a single step and greatly speeds up development.
 
 QMLKit also allows you to use Qt Creator or any other IDE or text editor you
-prefer to build your application. 
+prefer to build your application.
 
-Also Qt Creator doesn't include a deployment process and deploying to different
-platforms is challenging and poorly documented.
+Finally, Qt Creator doesn't include a deployment process, making deploying to different
+platforms a challenge. QMLKit will also provide a configuration and deployment system (on roadmap).
 
-### Instructions
 
-Only tested on OSX at the moment.
+## Features
 
-    git clone https://github.com/ggamel/QMLKit.git
-    cd QMLKit
-    make design
+*  Live reload QML
+*  Design for multiple platforms simulataneously
+*  Design GUI live in the running application
+*  Single-step design implementation and integration
+
+
+## Quick Start (OS X only at present)
+
+Clone repo, enter directory, run Makefile:
+
+```sh
+git clone https://github.com/ggamel/QMLKit.git
+cd QMLKit
+make design
+```
+
 
 Edit `src/qml/Main.qml` to design your QML interface interactively.
 
-### More to come
 
-- TDD - Test Driven Development
-- Graphical QtObject Creator and Connection editor
+## Roadmap
 
-### TODO
+* TDD - Test Driven Development system
+* Graphical QtObject Creator and Connection editor
+* Configuration and deployement system
 
-- [ ] Create configuration and deployment system.
-- [ ] Create TDD system.
+
+## License
+
+QMLKit is provided under the [MIT license]().
 
