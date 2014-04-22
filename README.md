@@ -45,5 +45,5 @@ Edit `src/qml/Main.qml` to design your QML interface interactively.
 
 ## License
 
-QMLKit is provided under the [MIT license]().
+QMLKit is provided under the [MIT license](https://github.com/ggamel/QMLKit/blob/master/LICENSE.md).
 
