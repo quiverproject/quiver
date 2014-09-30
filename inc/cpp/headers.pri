@@ -1,5 +1,5 @@
 INCLUDEPATH += $$PWD
 
-HEADERS +=  $$PWD/Qkit.h \
-            $$PWD/QkRefresher.h \
-            $$PWD/QkWindow.h \
+HEADERS +=  $$PWD/Quiver.h \
+            $$PWD/QuiverRefresher.h \
+            $$PWD/QuiverWindow.h \

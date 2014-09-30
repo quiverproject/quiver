@@ -1,3 +1,3 @@
-SOURCES +=  $$PWD/Qkit.cpp \
-            $$PWD/QkRefresher.cpp \
-            $$PWD/QkWindow.cpp \
+SOURCES +=  $$PWD/Quiver.cpp \
+            $$PWD/QuiverRefresher.cpp \
+            $$PWD/QuiverWindow.cpp \

@@ -1,2 +1,2 @@
 // TODO: make this file watched too.
-var name = "QMLKit"
+var name = "Wilson"

@@ -7,33 +7,38 @@
 #include <QString>
 #include <QStringList>
 
-#include <QkRefresher.h>
+#include <QuiverRefresher.h>
 
-class QkWindow : public QObject
+class QuiverWindow : public QObject
 {
   Q_OBJECT
+Q_PROPERTY(bool pendingConnectionRequest READ pendingConnectionRequest NOTIFY pendingConnectionRequestChanged)
 
   QString                 _source;
   QStringList             *_watchList;
-  QQuickView              *_window;
+  QQmlApplicationEngine              *_engine;
   QFileSystemWatcher      *_watcher;
 
-  QkRefresher               _refresher;
+  QuiverRefresher               _refresher;
 
   public:
-    explicit QkWindow(QObject *parent = 0);
-    virtual ~QkWindow();
+    explicit QuiverWindow(QObject *parent = 0);
+    virtual ~QuiverWindow();
 
     void setSource(const QString & path);
     void addWatchPath(const QString & path);
     void addWatchPaths(const QStringList & paths);
-    void show();
+//    void show();
     void addProperty(const QString& name, QObject *);
 
+    bool pendingConnectionRequest() const { return m_pending_connectionRequest; }
   public slots:
 
   signals:
+    void pendingConnectionRequestChanged();
 
+private:
+    bool m_pending_connectionRequest;
 };
 
 #endif // QKWINDOW_H

@@ -11,7 +11,7 @@
 int main(int argc, char *argv[])
 {
     QGuiApplication app(argc, argv);
-    QkWindow desktop;
+    QuiverWindow desktop;
     // running from: .build/designer/Qkit.app/Contents/MacOS/Qkit
     desktop.setSource(QDir::currentPath() + "/src/qml/desktopPlatform.qml");
     desktop.addWatchPath(QDir::currentPath() + "/src/qml/Main.qml");
