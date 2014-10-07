@@ -1,8 +1,6 @@
 #include <QDebug>
 #include <QuiverRefresher.h>
 
-#include <iostream>
-
 QuiverRefresher::QuiverRefresher(QObject *parent)
     : QObject(parent)
 {

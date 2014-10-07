@@ -1,24 +1,19 @@
 #include <QuiverWindow.h>
-#include <QDebug>
 
-QuiverWindow::QuiverWindow(QObject *parent) : QObject(parent)
+QuiverWindow::QuiverWindow(QString sourcePath, QObject *parent) : QObject(parent)
 {
   _engine = new QQmlApplicationEngine;
-//  _window->setResizeMode(QQuickView::SizeRootObjectToView);
-//  _window->setWidth(1280);
-//  _window->setHeight(752);
+  addProperty("quiver", this);
 
-//  _window->setFlags(
-//                    _window->flags() |
-//                    Qt::WindowFullscreenButtonHint
-//                    );
   _watcher = new QFileSystemWatcher;
-
   connect(_watcher,     SIGNAL(fileChanged(const QString&)),
-          &_refresher,    SLOT(fileChanged(const QString&)));
+    this,    SLOT(fileChanged(const QString&)));
+  connect(_watcher,     SIGNAL(directoryChanged(const QString&)),
+    this,    SLOT(fileChanged(const QString&)));
 
-  connect(&_refresher, SIGNAL(update()),
-          this, SIGNAL(pendingConnectionRequestChanged()));
+  if (!sourcePath.isEmpty()) {
+    setSource(sourcePath);
+  }
 }
 
 QuiverWindow::~QuiverWindow()
@@ -27,18 +22,32 @@ QuiverWindow::~QuiverWindow()
   delete _watcher;
 }
 
+void QuiverWindow::detectPlatform() {
+  //FIXME try to get a platform name out of an environment variable - otherwise, detect it using qt
+  setPlatform("osx");
+}
+
+void QuiverWindow::setPlatform(const QString & platformName) {
+  _platformName = platformName;
+}
+
 void QuiverWindow::setSource(const QString & path)
 {
-  _source = path;
+  _sourcePath = path;
 
-  //_window->setSource( QUrl::fromLocalFile(_source) );
+  if (_platformName.isEmpty()) {
+          detectPlatform();
+  }
 
-  _engine->load(QUrl::fromLocalFile(_source));
+  QDir platformDir(_sourcePath + "/" + _platformName);
+  _engine->load(QUrl::fromLocalFile(platformDir.absolutePath() + "/main.qml"));
+  addWatchPath(platformDir.absolutePath());
+}
 
-  _refresher.setSource(path);
-  //_refresher.setEngine(_window->engine());
-  _refresher.setEngine(_engine);
-  _refresher.setWatcher(_watcher);
+void QuiverWindow::fileChanged(const QString & path)
+{
+  _engine->clearComponentCache();
+  emit pendingConnectionRequestChanged();
 
   _watcher->addPath(path);
 }
@@ -53,14 +62,7 @@ void QuiverWindow::addWatchPaths(const QStringList & paths)
   _watcher->addPaths(paths);
 }
 
-//void QuiverWindow::show()
-//{
-//  //_window->show();
-//  //_window->showFullScreen();
-//}
-
-void QuiverWindow::addProperty(const QString& name, QObject *obj)
+void QuiverWindow::addProperty(const QString & name, QObject * obj)
 {
   _engine->rootContext()->setContextProperty(name, obj);
 }
-
