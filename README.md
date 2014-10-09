@@ -24,23 +24,20 @@ platforms a challenge. Quiver will also provide a configuration and deployment s
 
 ## Quick Start (OS X only at present)
 
-Clone repo, enter directory, run Makefile:
-
-```sh
-git clone https://github.com/quiverproject/quiver.git
-cd quiver
-make design
+```git clone git@github.com:quiverproject/quiver-example-project.git QuiverExample
+cd QuiverExample
+git clone git@github.com:quiverproject/quiver.git Quiver
 ```
 
 
-Edit `src/qml/Main.qml` to design your QML interface interactively.
+Edit `qml/QuiverExample/osx/MainUI.qml` to design your QML interface interactively.
 
 
 ## Roadmap
 
 * TDD - Test Driven Development system
 * Graphical QtObject Creator and Connection editor
-* Configuration and deployement system
+* Configuration and deployment system
 
 
 ## License
