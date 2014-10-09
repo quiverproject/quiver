@@ -24,7 +24,8 @@ platforms a challenge. Quiver will also provide a configuration and deployment s
 
 ## Quick Start (OS X only at present)
 
-```git clone git@github.com:quiverproject/quiver-example-project.git QuiverExample
+```
+git clone git@github.com:quiverproject/quiver-example-project.git QuiverExample
 cd QuiverExample
 git clone git@github.com:quiverproject/quiver.git Quiver
 ```
