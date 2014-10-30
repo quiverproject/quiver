@@ -23,8 +23,29 @@ Quiver::~Quiver()
 }
 
 void Quiver::detectPlatform() {
-  //FIXME try to get a platform name out of an environment variable - otherwise, detect it using qt
-  setPlatform("osx");
+        QString platform_name("unknown");
+
+
+#ifdef Q_OS_IOS
+        platform_name = "ios";
+#endif
+
+#ifdef Q_OS_MACX
+        platform_name = "osx";
+#endif
+
+#ifdef Q_OS_WIN
+        platform_name = "win";
+#endif
+
+
+        QProcessEnvironment env = QProcessEnvironment::systemEnvironment();
+        if (env.contains("Quiver_platformName") && !env.value("Quiver_platformName").isEmpty()) {
+                platform_name = env.value("Quiver_platformName");
+        }
+
+
+        setPlatform(platform_name);
 }
 
 void Quiver::setPlatform(const QString & platformName) {

@@ -1,0 +1,169 @@
+#!/usr/bin/perl
+
+use strict;
+use warnings;
+
+use Data::Dumper;
+use Cwd;
+use File::Slurp;
+
+my $usage_string = "usage: quiver\n\t{-develop|-deploy}\n\t{-directory path/to/projectdir}\n\t-platform platformname\n\t-config configname {-qmake path/to/qmake}\n";
+
+my $mainqmltemplate = <<SABRAC;
+import QtQuick 2.2
+import QtQuick.Controls 1.1
+
+ApplicationWindow { id: main
+	Item { id: env
+QUIVERENV
+	}
+        property string sourceFileName: "MainUI.qml"
+        property string menuFileName: "MainMenu.qml"
+
+        visible: true
+        
+        menuBar: mainMenuLoader.item
+
+        Connections {
+                target: quiver
+                onPendingConnectionRequestChanged: {
+                        mainLoader.source = ""
+                        mainLoader.source = sourceFileName
+                }
+        }
+
+        Loader { id: mainLoader
+                source: sourceFileName
+                anchors.fill: parent
+                focus: true
+        }
+
+        Loader { id: mainMenuLoader
+                source: menuFileName
+        }
+}
+SABRAC
+
+my $develop = 1;
+
+my %args = (
+	directory => [],
+	platform => [],
+	config => [],
+	qmake => [],
+);
+my %shortform = (
+	'd' => 'directory',
+	'p' => 'platform',
+	'c' => 'config',
+	'q' => 'qmake',
+);
+
+my @argsbak = @ARGV;
+PARAMETER: while (@argsbak) {
+	my $arg = shift @argsbak;
+	if ($arg !~ s{^-}{}) {
+		print "ignoring: $arg\n";
+		next;
+	}
+	$arg = $shortform{$arg} if exists $shortform{$arg};
+	if ('help' eq $arg) {
+		print $usage_string;
+		exit 0;
+	} elsif ('develop' eq $arg) {
+		$develop = 1;
+	} elsif ('deploy' eq $arg) {
+		$develop = 0;
+	} elsif (!exists $args{$arg}) {
+		die "$0: fatal: unknown parameter: $arg";
+	}
+	VALUE: while (@argsbak) {
+		my $value = shift @argsbak;
+		if ($value =~ m{^-}) { #time to move on to the next parameter
+			unshift @argsbak, $value;
+			next PARAMETER;
+		}
+		push @{$args{$arg}}, $value;
+	}
+}
+
+#must have one config argument per platform argument and vice versa
+if (@{$args{platform}} != @{$args{config}}) {
+	die "$0: fatal: too many ".(@{$args{platform}} > @{$args{config}} ? "platform" : "config")." arguments";
+}
+
+if (@{$args{directory}} and @{$args{directory}} > 1) {
+	die "$0: fatal: too many directories: right now the script only supports launching one quiver app at a time";
+}
+
+if (@{$args{qmake}} and @{$args{qmake}} > 1) {
+	die "$0: fatal: please supply only one path to qmake";
+}
+
+#if we were not passed a directory option, set it to .
+if (!@{$args{directory}}) {
+	push @{$args{directory}}, '.';
+}
+
+chdir $args{directory}->[0];
+my $projdir = Cwd::abs_path('.');
+
+sub files_in_dir {
+	my $dir = shift || '.';
+	
+	opendir my $dh, $dir or die "fatal: could not open dir: $dir ($!)";
+	my @files = sort grep { -f $_ } readdir $dh;
+	close $dh;
+	
+	return \@files;
+}
+
+#find the one .pro file in the directory
+my @pro_files = grep { $_ =~ m{\.pro$}i } @{files_in_dir()};
+die "$0: fatal: could not find one .pro file in directory" if !@pro_files;
+die "$0: fatal: found more than one .pro file in directory:\n".join("\n", @pro_files) if @pro_files > 1;
+
+my $projname = $pro_files[0];
+$projname =~ s{\.pro}{}i;
+
+die "$0: fatal: this project does not have a 'qml' directory - is it a Quiver project?" if !-d 'qml';
+
+my $builddir = "../build-quiver-${projname}";
+if (!-d $builddir) {
+	die "$0: fatal: can't mkdir $builddir" unless mkdir $builddir;
+}
+die "$0: fatal: can't chdir to $builddir" unless chdir $builddir;
+
+my $qmake = 'qmake';
+$qmake = $args{qmake}->[0] if @{$args{qmake}};
+print "$0: running qmake ...\n";
+qx($qmake $projdir);
+print "$0: building the project ...\n";
+qx(make -j 4); #FIXME
+
+while (@{$args{platform}}) {
+	my $platform = shift @{$args{platform}};
+	my $config = shift @{$args{config}};
+	
+	#replace template variables in $qml
+	my $qml = $mainqmltemplate;
+	my @config = read_file $projdir.'/Quiver/config/'.$config.'.conf';
+	for my $line (@config) {
+		$line =~ s{^}{property var };
+	}
+	$qml =~ s{QUIVERENV}{@config}g;
+	
+	#write main.qml in qml/${platform}
+	open my $fh, '>', $projdir.'/qml/'.$platform.'/main.qml' or die "$0: fatal: can't open main.qml";
+	binmode $fh;
+	print $fh $qml;
+	close $fh;
+	
+	#set the Quiver_platformName environment variable to ${platform}
+	$ENV{Quiver_platformName} = $platform;
+	
+	#launch the app
+	system("$projname.app/Contents/MacOS/$projname &");
+}
+
+exit 0;

@@ -8,6 +8,7 @@
 #include <QStringList>
 #include <QDir>
 #include <QDebug>
+#include <QProcessEnvironment>
 
 class Quiver : public QObject
 {
