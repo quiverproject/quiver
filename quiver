@@ -154,7 +154,10 @@ while (@{$args{platform}}) {
 	$qml =~ s{QUIVERENV}{@config}g;
 	
 	#write main.qml in qml/${platform}
-	open my $fh, '>', $projdir.'/qml/'.$platform.'/main.qml' or die "$0: fatal: can't open main.qml";
+	my $platformdir = $projdir.'/qml/'.$platform;
+	die "$0: fatal: platform directory $platformdir not found" unless -d $platformdir;
+	my $main_qml_filepath = $platformdir.'/main.qml';
+	open my $fh, '>', $main_qml_filepath or die "$0: fatal: can't open main.qml at $main_qml_filepath";
 	binmode $fh;
 	print $fh $qml;
 	close $fh;
