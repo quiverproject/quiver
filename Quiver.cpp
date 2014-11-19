@@ -61,6 +61,7 @@ void Quiver::setSource(const QString & path)
   }
 
   QDir platformDir(_sourcePath + "/" + _platformName);
+  _engine->addImportPath(_sourcePath);
   _engine->load(QUrl::fromLocalFile(platformDir.absolutePath() + "/main.qml"));
   addWatchPath(platformDir.absolutePath());
 }
