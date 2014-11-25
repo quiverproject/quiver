@@ -2,24 +2,25 @@
 
 Quiver::Quiver(QString sourcePath, QObject *parent) : QObject(parent)
 {
-  _engine = new QQmlApplicationEngine;
-  addProperty("quiver", this);
+        _engine = new QQmlApplicationEngine;
+        new QQmlFileSelector(_engine);
+        addProperty("quiver", this);
 
-  _watcher = new QFileSystemWatcher;
-  connect(_watcher,     SIGNAL(fileChanged(const QString&)),
-    this,    SLOT(fileChanged(const QString&)));
-  connect(_watcher,     SIGNAL(directoryChanged(const QString&)),
-    this,    SLOT(fileChanged(const QString&)));
+        _watcher = new QFileSystemWatcher;
+        connect(_watcher,     SIGNAL(fileChanged(const QString&)),
+                this,    SLOT(fileChanged(const QString&)));
+        connect(_watcher,     SIGNAL(directoryChanged(const QString&)),
+                this,    SLOT(fileChanged(const QString&)));
 
-  if (!sourcePath.isEmpty()) {
-    setSource(sourcePath);
-  }
+        if (!sourcePath.isEmpty()) {
+                setSource(sourcePath);
+        }
 }
 
 Quiver::~Quiver()
 {
-  delete _engine;
-  delete _watcher;
+        delete _engine;
+        delete _watcher;
 }
 
 void Quiver::detectPlatform() {
@@ -49,42 +50,44 @@ void Quiver::detectPlatform() {
 }
 
 void Quiver::setPlatform(const QString & platformName) {
-  _platformName = platformName;
+        _platformName = platformName;
 }
 
 void Quiver::setSource(const QString & path)
 {
-  _sourcePath = path;
+        _sourcePath = path;
 
-  if (_platformName.isEmpty()) {
-          detectPlatform();
-  }
+        if (_platformName.isEmpty()) {
+                detectPlatform();
+        }
 
-  QDir platformDir(_sourcePath + "/" + _platformName);
-  _engine->addImportPath(_sourcePath);
-  _engine->load(QUrl::fromLocalFile(platformDir.absolutePath() + "/main.qml"));
-  addWatchPath(platformDir.absolutePath());
+        QDir platformDir(_sourcePath + "/" + _platformName);
+        _engine->addImportPath(_sourcePath);
+        _engine->load(QUrl::fromLocalFile(platformDir.absolutePath() + "/main.qml"));
+        addWatchPath(platformDir.absolutePath());
+        printf("Quiver: main.qml loaded\n"); //this must be printf() and not qDebug() << for some reason ... (20141125)
+        fflush(stdout);
 }
 
 void Quiver::fileChanged(const QString & path)
 {
-  _engine->clearComponentCache();
-  emit pendingConnectionRequestChanged();
+        _engine->clearComponentCache();
+        emit pendingConnectionRequestChanged();
 
-  _watcher->addPath(path);
+        _watcher->addPath(path);
 }
 
 void Quiver::addWatchPath(const QString & path)
 {
-  _watcher->addPath(path);
+        _watcher->addPath(path);
 }
 
 void Quiver::addWatchPaths(const QStringList & paths)
 {
-  _watcher->addPaths(paths);
+        _watcher->addPaths(paths);
 }
 
 void Quiver::addProperty(const QString & name, QObject * obj)
 {
-  _engine->rootContext()->setContextProperty(name, obj);
+        _engine->rootContext()->setContextProperty(name, obj);
 }
