@@ -64,6 +64,8 @@ void Quiver::setSource(const QString & path)
   _engine->addImportPath(_sourcePath);
   _engine->load(QUrl::fromLocalFile(platformDir.absolutePath() + "/main.qml"));
   addWatchPath(platformDir.absolutePath());
+  printf("Quiver: main.qml loaded\n"); //this must be printf() and not qDebug() << for some reason ... (20141125)
+  fflush(stdout);
 }
 
 void Quiver::fileChanged(const QString & path)
