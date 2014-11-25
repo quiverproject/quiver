@@ -7,10 +7,12 @@ QUIVERENV
 	}
         property string sourceFileName: "MainUI.qml"
         property string menuFileName: "MainMenu.qml"
+        property string toolBarFileName: "MainToolBar.qml"
 
         visible: true
         
         menuBar: mainMenuLoader.item
+        toolBar: toolBarLoader.item
 
         Connections {
                 target: quiver
@@ -28,5 +30,9 @@ QUIVERENV
 
         Loader { id: mainMenuLoader
                 source: menuFileName
+        }
+        
+        Loader { id: toolBarLoader
+        	source: toolBarFileName
         }
 }
