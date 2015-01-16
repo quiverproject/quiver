@@ -10,6 +10,7 @@
 #include <QDebug>
 #include <QProcessEnvironment>
 #include <QQmlFileSelector>
+#include <QQmlImageProviderBase>
 
 class Quiver : public QObject
 {
@@ -31,9 +32,8 @@ public:
         void addWatchPath(const QString & path);
         void addWatchPaths(const QStringList & paths);
         void addProperty(const QString& name, QObject *);
-
+        void addImageProvider(const QString &name, QQmlImageProviderBase *image_provider);
         bool pendingConnectionRequest() const { return m_pending_connectionRequest; }
-
 public slots:
         void fileChanged(const QString& path);
 

@@ -91,3 +91,7 @@ void Quiver::addProperty(const QString & name, QObject * obj)
 {
         _engine->rootContext()->setContextProperty(name, obj);
 }
+
+void Quiver::addImageProvider(const QString & name, QQmlImageProviderBase *image_provider) {
+        _engine->addImageProvider(name, image_provider);
+}
