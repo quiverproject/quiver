@@ -61,10 +61,15 @@ void Quiver::setSource(const QString & path)
                 detectPlatform();
         }
 
-        QDir platformDir(_sourcePath + "/" + _platformName);
         _engine->addImportPath(_sourcePath);
-        _engine->load(QUrl::fromLocalFile(platformDir.absolutePath() + "/main.qml"));
-        addWatchPath(platformDir.absolutePath());
+        if (path.startsWith("qrc:/")) {
+                _engine->load(QUrl(_sourcePath + "/" + _platformName + "/main.qml"));
+        } else {
+                QDir platformDir(_sourcePath + "/" + _platformName);
+                _engine->load(QUrl::fromLocalFile(platformDir.absolutePath() + "/main.qml"));
+                addWatchPath(platformDir.absolutePath());
+        }
+
         printf("Quiver: main.qml loaded\n"); //this must be printf() and not qDebug() << for some reason ... (20141125)
         fflush(stdout);
 }
