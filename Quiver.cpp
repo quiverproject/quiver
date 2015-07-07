@@ -1,3 +1,4 @@
+#include <QProcessEnvironment>
 #include <Quiver.h>
 
 Quiver::Quiver(QString sourcePath, QObject *parent) : QObject(parent)
@@ -40,10 +41,12 @@ void Quiver::detectPlatform() {
 #endif
 
 
+#ifndef Q_OS_IOS //this broke in qt 5.5.0 (20150707)
         QProcessEnvironment env = QProcessEnvironment::systemEnvironment();
         if (env.contains("Quiver_platformName") && !env.value("Quiver_platformName").isEmpty()) {
                 platform_name = env.value("Quiver_platformName");
         }
+#endif
 
 
         setPlatform(platform_name);
