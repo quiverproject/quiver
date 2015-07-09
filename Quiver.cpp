@@ -13,6 +13,8 @@ Quiver::Quiver(QString sourcePath, QObject *parent) : QObject(parent)
         connect(_watcher,     SIGNAL(directoryChanged(const QString&)),
                 this,    SLOT(fileChanged(const QString&)));
 
+        detectDeploy();
+
         if (!sourcePath.isEmpty()) {
                 setSource(sourcePath);
         }
@@ -52,54 +54,64 @@ void Quiver::detectPlatform() {
         setPlatform(platform_name);
 }
 
-void Quiver::setPlatform(const QString & platformName) {
+void Quiver::setPlatform(const QString &platformName) {
         _platformName = platformName;
 }
 
-void Quiver::setSource(const QString & path)
-{
+void Quiver::detectDeploy() {
+        bool deploy = true;
+
+#ifndef Q_OS_IOS //this broke in qt 5.5.0 (20150707)
+        QProcessEnvironment env = QProcessEnvironment::systemEnvironment();
+        if (env.contains("Quiver_deploy") && !env.value("Quiver_deploy").isEmpty()) {
+                deploy = env.value("Quiver_deploy") == "1" ? true : false;
+        }
+#endif
+
+        setDeploy(deploy);
+}
+
+void Quiver::setSource(const QString &path) {
         _sourcePath = path;
 
         if (_platformName.isEmpty()) {
                 detectPlatform();
         }
 
-        _engine->addImportPath(_sourcePath);
-        if (path.startsWith("qrc:/")) {
-                _engine->load(QUrl(_sourcePath + "/" + _platformName + "/main.qml"));
+        if (_deploy) {
+                _engine->addImportPath("qrc:/" + _sourcePath);
+                _engine->load(QUrl("qrc:/" + _sourcePath + "/" + _platformName + "/main.qml"));
         } else {
+                _engine->addImportPath(_sourcePath);
                 QDir platformDir(_sourcePath + "/" + _platformName);
                 _engine->load(QUrl::fromLocalFile(platformDir.absolutePath() + "/main.qml"));
                 addWatchPath(platformDir.absolutePath());
         }
 
-        printf("Quiver: main.qml loaded\n"); //this must be printf() and not qDebug() << for some reason ... (20141125)
-        fflush(stdout);
+        //switched from stdout to stderr because the message was getting lost under os x 10.8 (20150709)
+        fprintf(stderr, "Quiver: main.qml loaded\n"); //this must be printf() and not qDebug() << for some reason ... (20141125)
+        fflush(stderr);
 }
 
-void Quiver::fileChanged(const QString & path)
-{
+void Quiver::fileChanged(const QString &path) {
         _engine->clearComponentCache();
         emit pendingConnectionRequestChanged();
 
         _watcher->addPath(path);
 }
 
-void Quiver::addWatchPath(const QString & path)
-{
+void Quiver::addWatchPath(const QString &path) {
         _watcher->addPath(path);
 }
 
-void Quiver::addWatchPaths(const QStringList & paths)
-{
+void Quiver::addWatchPaths(const QStringList &paths) {
         _watcher->addPaths(paths);
 }
 
-void Quiver::addProperty(const QString & name, QObject * obj)
-{
+void Quiver::addProperty(const QString &name, QObject *obj) {
         _engine->rootContext()->setContextProperty(name, obj);
 }
 
-void Quiver::addImageProvider(const QString & name, QQmlImageProviderBase *image_provider) {
+void Quiver::addImageProvider(const QString &name, QQmlImageProviderBase *image_provider) {
         _engine->addImageProvider(name, image_provider);
 }
