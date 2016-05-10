@@ -10,6 +10,8 @@ QUIVERENV
         property string toolBarFileName: "MainToolBar.qml"
         property string statusBarFileName: "MainStatusBar.qml"
         
+        property var state: ({})
+        
         visible: true
         
         menuBar: mainMenuLoader.item
