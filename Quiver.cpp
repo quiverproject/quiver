@@ -93,6 +93,15 @@ void Quiver::setSource(const QString &path) {
         fflush(stderr);
 }
 
+void Quiver::addImportPath(const QString &path) {
+        if (_deploy) {
+                _engine->addImportPath("qrc:/" + path);
+        } else {
+                _engine->addImportPath(path);
+                addWatchPath(QDir(path).absolutePath());
+        }
+}
+
 void Quiver::fileChanged(const QString &path) {
         _engine->clearComponentCache();
         emit pendingConnectionRequestChanged();

@@ -34,6 +34,7 @@ public:
         void addImageProvider(const QString &name, QQmlImageProviderBase *image_provider);
         bool pendingConnectionRequest() const { return m_pending_connectionRequest; }
         bool deploy() { return _deploy; }
+        void addImportPath(const QString &path);
 public slots:
         void fileChanged(const QString &path);
 signals:
