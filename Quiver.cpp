@@ -124,3 +124,14 @@ void Quiver::addProperty(const QString &name, QObject *obj) {
 void Quiver::addImageProvider(const QString &name, QQmlImageProviderBase *image_provider) {
         _engine->addImageProvider(name, image_provider);
 }
+
+void Quiver::takeScreenshot() {
+        foreach (QObject *obj, _engine->rootObjects()) {
+                QQuickWindow *window = qobject_cast<QQuickWindow *>(obj);
+                if (window) {
+                        QImage shot = window->grabWindow();
+                        emit tookScreenshot(shot);
+                        break;
+                }
+        }
+}

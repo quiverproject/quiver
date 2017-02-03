@@ -11,6 +11,7 @@
 #include <QProcessEnvironment>
 #include <QQmlFileSelector>
 #include <QQmlImageProviderBase>
+#include <QQuickWindow>
 
 class Quiver : public QObject
 {
@@ -37,9 +38,11 @@ public:
         void addImportPath(const QString &path);
 public slots:
         void fileChanged(const QString &path);
+        void takeScreenshot();
 signals:
         void pendingConnectionRequestChanged();
         void deployChanged();
+        void tookScreenshot(QImage);
 private:
         bool m_pending_connectionRequest;
         void detectPlatform();
